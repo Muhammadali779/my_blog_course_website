@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ site.owner_name }} - Bosh Sahifa{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-inner">
+    <div class="hero-text fade-in">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Software Engineer
+      </div>
+      <h1 class="hero-title">
+        Salom, men<br>
+        <span class="gradient-text">{{ site.owner_name|default:"Muhammadali" }}</span>
+      </h1>
+      <p class="hero-sub">
+        {{ site.owner_title|default:"Backend Developer | Python & Django | PostgreSQL" }}.
+        Bu yerda texnik blog maqolalar va online kurslar topasiz.
+      </p>
+      <div class="hero-actions">
+        <a href="{% url 'blog_list' %}" class="btn btn-primary btn-lg">
+          📝 Bloglarni o'qi
+        </a>
+        <a href="{% url 'course_list' %}" class="btn btn-secondary btn-lg">
+          🎓 Kurslarni ko'r
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card-stack">
+        <div class="hero-card hero-card-1">
+          <div class="card-label">📝 So'nggi Blog</div>
+          {% with blogs.0 as latest %}
+          {% if latest %}
+          <div class="card-title">{{ latest.title|truncatechars:45 }}</div>
+          <div class="card-meta">⏱ {{ latest.reading_time }} min · 👁 {{ latest.views_count }} views</div>
+          {% else %}
+          <div class="card-title">Django ORM Deep Dive</div>
+          <div class="card-meta">⏱ 8 min · 👁 124 views</div>
+          {% endif %}
+          {% endwith %}
+        </div>
+        <div class="hero-card hero-card-2">
+          <div class="card-label">🎓 Kurs</div>
+          <div class="card-title">Python & Django Masterclass</div>
+          <div class="card-meta">📚 24 dars · 3 oy</div>
+        </div>
+        <div class="hero-card hero-card-3">
+          <div class="card-label">💻 Stack</div>
+          <div class="card-title">Python · Django · PostgreSQL</div>
+          <div class="card-meta">Backend Specialist</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT PREVIEW -->
+<section class="section-sm" style="background: var(--bg-card); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div style="display:grid; grid-template-columns: auto 1fr; gap:40px; align-items:center; max-width:900px; margin:0 auto;">
+      <div>
+        {% if site.owner_avatar %}
+          <img src="{{ site.owner_avatar.url }}" alt="{{ site.owner_name }}"
+               style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--border);">
+        {% else %}
+          <div style="width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--accent-1),var(--accent-3));display:flex;align-items:center;justify-content:center;font-size:2.5rem;">👨‍💻</div>
+        {% endif %}
+      </div>
+      <div>
+        <p style="color:var(--text-secondary);line-height:1.75;font-size:1.0rem;">
+          {% if site.owner_bio %}{{ site.owner_bio|truncatewords:40 }}{% else %}
+          Backend developer, Python va Django ixtisosligi bo'yicha ishlaychi.
+          Toshkent Axborot Texnologiyalari Universiteti Samarqand filiali, Dasturiy Injiniring yo'nalishi.
+          {% endif %}
+        </p>
+        <a href="{% url 'about' %}" class="btn btn-outline btn-sm" style="margin-top:14px;">
+          Ko'proq o'qi →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LATEST BLOGS -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">So'nggi maqolalar</span>
+      <h2 class="section-title">Texnik Blog</h2>
+      <p class="section-desc">Dasturlash, arxitektura va texnologiyalar haqida chuqur maqolalar</p>
+    </div>
+
+    {% if blogs %}
+    <div class="blog-grid stagger">
+      {% for blog in blogs %}
+      <article class="blog-card">
+        <div class="blog-card-img">
+          {% if blog.thumbnail %}
+            <img src="{{ blog.thumbnail.url }}" alt="{{ blog.title }}" loading="lazy">
+          {% else %}
+            <div class="blog-card-img-placeholder">📝</div>
+          {% endif %}
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-meta">
+            <span class="blog-card-meta-item">⏱ {{ blog.reading_time }} min</span>
+            <span class="blog-card-meta-item">👁 {{ blog.views_count }}</span>
+            <span class="blog-card-meta-item">📅 {{ blog.created_at|date:"d M Y" }}</span>
+          </div>
+          <h3 class="blog-card-title">{{ blog.title }}</h3>
+          <p class="blog-card-preview">{{ blog.preview }}</p>
+          {% if blog.tags.all %}
+          <div class="blog-card-tags">
+            {% for tag in blog.tags.all|slice:":3" %}
+            <span class="tag">{{ tag.name }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <a href="{% url 'blog_detail' blog.slug %}" class="btn btn-outline btn-sm">
+            Davomini o'qi →
+          </a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <div style="text-align:center; margin-top:40px;">
+      <a href="{% url 'blog_list' %}" class="btn btn-secondary">Barcha bloglar →</a>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📝</div>
+      <div class="empty-title">Hali blog maqolalar yo'q</div>
+      <div class="empty-desc">Tez orada qiziqarli maqolalar qo'shiladi!</div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- SKILLS STRIP -->
+{% if site.get_skills_list %}
+<section style="padding:40px 0; background:var(--bg-card); border-top:1px solid var(--border); border-bottom:1px solid var(--border); overflow:hidden;">
+  <div class="container">
+    <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+      {% for skill in site.get_skills_list %}
+      <span class="skill-pill">{{ skill }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="section" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-3)); padding: 64px 0;">
+  <div class="container" style="text-align:center;">
+    <h2 style="color:#fff; font-size:2rem; margin-bottom:14px; letter-spacing:-0.5px;">
+      Online kurslarimizga yoziling!
+    </h2>
+    <p style="color:rgba(255,255,255,0.85); margin-bottom:28px; font-size:1.05rem;">
+      Strukturali o'quv dasturi orqali professional dasturchi bo'ling
+    </p>
+    <a href="{% url 'course_list' %}" class="btn btn-lg" style="background:#fff; color:var(--accent-1);">
+      🎓 Kurslarni ko'rish
+    </a>
+  </div>
+</section>
+{% endblock %}

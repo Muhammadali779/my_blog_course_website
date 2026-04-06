@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - Dashboard{% endblock %}
+{% block content %}
+<div class="dash-layout">
+  {% include 'dashboard/sidebar.html' %}
+  <main class="dash-main">
+    <div class="dash-header">
+      <a href="{% url 'manage_courses' %}" style="color:var(--text-muted); font-size:0.88rem;">← Kurslarga qaytish</a>
+      <h1 class="dash-title" style="margin-top:8px;">{{ title }}</h1>
+    </div>
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:32px; max-width:760px;">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Kurs Nomi</label>
+          {{ form.title }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tavsif</label>
+          {{ form.description }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Thumbnail Rasm</label>
+          {% if course and course.thumbnail %}<img src="{{ course.thumbnail.url }}" style="height:80px;border-radius:8px;margin-bottom:8px;display:block;">{% endif %}
+          {{ form.thumbnail }}
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div class="form-group">
+            <label class="form-label">Kategoriya</label>
+            {{ form.category }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Daraja</label>
+            {{ form.level }}
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Davomiyligi (oy)</label>
+          {{ form.duration_months }}
+        </div>
+        <div style="display:flex; gap:20px; align-items:center; margin-bottom:20px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            {{ form.is_free }}
+            <label class="form-label" style="margin:0;">Bepul kurs</label>
+          </div>
+        </div>
+        <div class="form-group" id="price-field">
+          <label class="form-label">Narx (so'm)</label>
+          {{ form.price }}
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+          {{ form.is_published }}
+          <label class="form-label" style="margin:0;">Nashr qilish</label>
+        </div>
+        <div style="display:flex; gap:12px;">
+          <button type="submit" class="btn btn-primary">💾 Saqlash</button>
+          <a href="{% url 'manage_courses' %}" class="btn btn-secondary">Bekor qilish</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+{% endblock %}

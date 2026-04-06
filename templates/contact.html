@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Bog'lanish - {{ site.owner_name }}{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">
+      <a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span><span>Bog'lanish</span>
+    </div>
+    <h1 style="font-size:2rem; letter-spacing:-0.5px; margin-top:12px;">📧 Bog'lanish</h1>
+    <p style="color:var(--text-secondary); margin-top:8px;">Savol va takliflaringiz bo'lsa, murojaat qiling</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:60px; max-width:1000px; margin:0 auto;" class="contact-grid">
+      <!-- Form -->
+      <div>
+        <h2 style="font-size:1.3rem; margin-bottom:24px; letter-spacing:-0.3px;">Xabar Yuborish</h2>
+        <form method="post" style="display:flex; flex-direction:column; gap:0;">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="form-label">Ismingiz</label>
+            {{ form.name }}
+            {% if form.name.errors %}<div style="color:#ef4444;font-size:0.8rem;margin-top:4px;">{{ form.name.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}<div style="color:#ef4444;font-size:0.8rem;margin-top:4px;">{{ form.email.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mavzu</label>
+            {{ form.subject }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Xabar</label>
+            {{ form.message }}
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="justify-content:center;">📤 Yuborish</button>
+        </form>
+      </div>
+
+      <!-- Info -->
+      <div>
+        <h2 style="font-size:1.3rem; margin-bottom:24px; letter-spacing:-0.3px;">Aloqa Ma'lumotlari</h2>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          {% if site.phone %}
+          <div style="display:flex; gap:14px; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 20px;">
+            <div style="width:42px;height:42px;background:rgba(59,130,246,0.1);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📞</div>
+            <div>
+              <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Telefon</div>
+              <a href="tel:{{ site.phone }}" style="font-weight:600;font-size:0.95rem;">{{ site.phone }}</a>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if site.email %}
+          <div style="display:flex; gap:14px; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 20px;">
+            <div style="width:42px;height:42px;background:rgba(59,130,246,0.1);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📧</div>
+            <div>
+              <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Email</div>
+              <a href="mailto:{{ site.email }}" style="font-weight:600;font-size:0.95rem;">{{ site.email }}</a>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if site.telegram_url %}
+          <a href="{{ site.telegram_url }}" target="_blank" style="display:flex; gap:14px; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 20px; transition:all var(--transition);" class="card">
+            <div style="width:42px;height:42px;background:rgba(0,136,204,0.15);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">✈️</div>
+            <div>
+              <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Telegram</div>
+              <div style="font-weight:600;font-size:0.95rem; color:var(--text-primary);">{% if site.telegram_username %}@{{ site.telegram_username }}{% else %}Telegram kanalimiz{% endif %}</div>
+            </div>
+          </a>
+          {% endif %}
+
+          {% if site.github_url %}
+          <a href="{{ site.github_url }}" target="_blank" style="display:flex; gap:14px; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 20px;" class="card">
+            <div style="width:42px;height:42px;background:rgba(13,27,42,0.1);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🐙</div>
+            <div>
+              <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">GitHub</div>
+              <div style="font-weight:600;font-size:0.95rem; color:var(--text-primary);">{% if site.github_username %}@{{ site.github_username }}{% else %}GitHub profilimiz{% endif %}</div>
+            </div>
+          </a>
+          {% endif %}
+
+          {% if site.address %}
+          <div style="display:flex; gap:14px; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 20px;">
+            <div style="width:42px;height:42px;background:rgba(59,130,246,0.1);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📍</div>
+            <div>
+              <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Manzil</div>
+              <div style="font-weight:500;font-size:0.88rem; color:var(--text-secondary);">{{ site.address }}</div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+@media(max-width:768px){ .contact-grid { grid-template-columns:1fr !important; } }
+</style>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ site.owner_name }} - Dev Blog{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}{{ site.owner_name }} - Blog va Online Kurslar{% endblock %}">
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="{% url 'home' %}" class="nav-logo">
+      <div class="nav-logo-dot"></div>
+      {{ site.owner_name|default:"DevBlog" }}
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="{% url 'home' %}">🏠 Home</a></li>
+      <li><a href="{% url 'blog_list' %}">📝 Blogs</a></li>
+      <li><a href="{% url 'course_list' %}">🎓 Courses</a></li>
+      <li><a href="{% url 'about' %}">👤 About Me</a></li>
+      <li><a href="{% url 'contact' %}">📧 Contact</a></li>
+      {% if request.user.is_authenticated and request.user.role in 'admin,owner' %}
+      <li><a href="{% url 'admin_dashboard' %}">⚙️ Dashboard</a></li>
+      {% endif %}
+    </ul>
+
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <div class="theme-toggle-thumb">
+          <span class="theme-sun">☀️</span>
+          <span class="theme-moon">🌙</span>
+        </div>
+      </button>
+
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="btn-nav" style="text-decoration:none">
+          👤 {{ request.user.username }}
+        </a>
+        <a href="{% url 'logout' %}" class="btn btn-secondary btn-sm">Chiqish</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-secondary btn-sm">Kirish</a>
+        <a href="{% url 'register' %}" class="btn-nav" style="text-decoration:none">Ro'yxat</a>
+      {% endif %}
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="{% url 'home' %}">🏠 Home</a>
+  <a href="{% url 'blog_list' %}">📝 Blogs</a>
+  <a href="{% url 'course_list' %}">🎓 Courses</a>
+  <a href="{% url 'about' %}">👤 About Me</a>
+  <a href="{% url 'contact' %}">📧 Contact</a>
+  {% if request.user.is_authenticated %}
+    {% if request.user.role in 'admin,owner' %}
+    <a href="{% url 'admin_dashboard' %}">⚙️ Dashboard</a>
+    {% endif %}
+    <a href="{% url 'profile' %}">👤 Profil</a>
+    <a href="{% url 'logout' %}">🚪 Chiqish</a>
+  {% else %}
+    <a href="{% url 'login' %}">🔑 Kirish</a>
+    <a href="{% url 'register' %}">✏️ Ro'yxat</a>
+  {% endif %}
+</div>
+
+<!-- DJANGO MESSAGES -->
+{% if messages %}
+<div class="messages-container">
+  {% for message in messages %}
+  <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}">
+    <span>{{ message }}</span>
+    <button class="alert-close" aria-label="Close">✕</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- PAGE CONTENT -->
+<div class="page-content">
+  {% block content %}{% endblock %}
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <!-- Brand -->
+    <div class="footer-brand">
+      <div class="logo-text">{{ site.owner_name|default:"DevBlog" }}</div>
+      <p>{{ site.owner_title|default:"Software Engineer" }}</p>
+      {% if site.phone %}
+      <div class="footer-phone">{{ site.phone }}</div>
+      {% endif %}
+      {% if site.address %}
+      <div class="footer-address">{{ site.address }}</div>
+      {% endif %}
+    </div>
+
+    <!-- Platform Links -->
+    <div class="footer-col">
+      <h4>Platforma</h4>
+      <ul class="footer-links">
+        <li><a href="{% url 'blog_list' %}">📝 Bloglar</a></li>
+        <li><a href="{% url 'course_list' %}">🎓 Kurslar</a></li>
+        <li><a href="{% url 'about' %}">👤 Men haqimda</a></li>
+      </ul>
+    </div>
+
+    <!-- Company -->
+    <div class="footer-col">
+      <h4>Ma'lumot</h4>
+      <ul class="footer-links">
+        <li><a href="{% url 'contact' %}">📧 Bog'lanish</a></li>
+        {% if site.university %}
+        <li><a href="#">🎓 {{ site.university|truncatechars:30 }}</a></li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Contact -->
+    <div class="footer-col">
+      <h4>Ijtimoiy</h4>
+      <ul class="footer-links">
+        {% if site.telegram_url %}<li><a href="{{ site.telegram_url }}" target="_blank">✈️ Telegram{% if site.telegram_username %} @{{ site.telegram_username }}{% endif %}</a></li>{% endif %}
+        {% if site.github_url %}<li><a href="{{ site.github_url }}" target="_blank">🐙 GitHub{% if site.github_username %} @{{ site.github_username }}{% endif %}</a></li>{% endif %}
+        {% if site.youtube_url %}<li><a href="{{ site.youtube_url }}" target="_blank">▶️ YouTube</a></li>{% endif %}
+        {% if site.email %}<li><a href="mailto:{{ site.email }}">📧 {{ site.email }}</a></li>{% endif %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom container">
+    <p>© {{ site.owner_name|default:"DevBlog" }} 2026. Barcha huquqlar himoyalangan.</p>
+    <div class="social-links">
+      {% if site.telegram_url %}<a href="{{ site.telegram_url }}" class="social-link" target="_blank" title="Telegram">✈️</a>{% endif %}
+      {% if site.github_url %}<a href="{{ site.github_url }}" class="social-link" target="_blank" title="GitHub">🐙</a>{% endif %}
+      {% if site.youtube_url %}<a href="{{ site.youtube_url }}" class="social-link" target="_blank" title="YouTube">▶️</a>{% endif %}
+      {% if site.instagram_url %}<a href="{{ site.instagram_url }}" class="social-link" target="_blank" title="Instagram">📸</a>{% endif %}
+      {% if site.linkedin_url %}<a href="{{ site.linkedin_url }}" class="social-link" target="_blank" title="LinkedIn">💼</a>{% endif %}
+    </div>
+  </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Kurslar - Dashboard{% endblock %}
+{% block content %}
+<div class="dash-layout">
+  {% include 'dashboard/sidebar.html' %}
+  <main class="dash-main">
+    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h1 class="dash-title">🎓 Kurslar</h1>
+        <p class="dash-subtitle">Jami: {{ courses.count }} ta kurs</p>
+      </div>
+      <a href="{% url 'course_create' %}" class="btn btn-primary">+ Yangi Kurs</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Kurs</th><th>Daraja</th><th>Narx</th><th>Darslar</th><th>O'quvchilar</th><th>Holat</th><th>Amallar</th></tr></thead>
+        <tbody>
+          {% for course in courses %}
+          <tr>
+            <td><strong>{{ course.title|truncatechars:40 }}</strong></td>
+            <td>{{ course.get_level_display }}</td>
+            <td>{% if course.is_free %}<span class="badge badge-success">Bepul</span>{% else %}{{ course.price|floatformat:0 }} so'm{% endif %}</td>
+            <td>{{ course.lessons_count }}</td>
+            <td>{{ course.enrollments.count }}</td>
+            <td><span class="badge {% if course.is_published %}badge-success{% else %}badge-warning{% endif %}">{% if course.is_published %}Nashr{% else %}Qoralama{% endif %}</span></td>
+            <td style="display:flex; gap:6px; flex-wrap:wrap;">
+              <a href="{% url 'course_modules' course.slug %}" class="btn btn-secondary btn-sm">📚</a>
+              <a href="{% url 'manage_students' course.slug %}" class="btn btn-secondary btn-sm">👥</a>
+              <a href="{% url 'course_edit' course.slug %}" class="btn btn-secondary btn-sm">✏️</a>
+              <a href="{% url 'course_delete' course.slug %}" class="btn btn-danger btn-sm">🗑</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center; padding:32px; color:var(--text-muted);">Hali kurs yo'q</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+{% endblock %}

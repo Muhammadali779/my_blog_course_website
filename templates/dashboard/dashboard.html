@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - {{ site.owner_name }}{% endblock %}
+{% block content %}
+<div class="dash-layout">
+  {% include 'dashboard/sidebar.html' %}
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1 class="dash-title">📊 Dashboard</h1>
+      <p class="dash-subtitle">Xush kelibsiz, {{ request.user.username }}!</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-blue">👥</div>
+        <div>
+          <div class="stat-value">{{ total_users }}</div>
+          <div class="stat-label">Foydalanuvchilar</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-green">📝</div>
+        <div>
+          <div class="stat-value">{{ total_blogs }}</div>
+          <div class="stat-label">Blog Maqolalar</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-yellow">🎓</div>
+        <div>
+          <div class="stat-value">{{ total_courses }}</div>
+          <div class="stat-label">Kurslar</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-red">📧</div>
+        <div>
+          <div class="stat-value">{{ total_messages }}</div>
+          <div class="stat-label">O'qilmagan Xabar</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Enrollments -->
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; margin-bottom:28px;">
+      <div style="padding:18px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:1rem; font-weight:700;">🎓 So'nggi Yozilishlar</h3>
+        <a href="{% url 'manage_enrollments' %}" class="btn btn-secondary btn-sm">Barchasi →</a>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Foydalanuvchi</th><th>Kurs</th><th>Holat</th><th>Sana</th></tr></thead>
+          <tbody>
+            {% for e in enrollments %}
+            <tr>
+              <td>{{ e.user.username }}</td>
+              <td>{{ e.course.title|truncatechars:40 }}</td>
+              <td><span class="badge {% if e.payment_status == 'paid' %}badge-success{% elif e.payment_status == 'pending' %}badge-warning{% elif e.payment_status == 'free' %}badge-secondary{% else %}badge-danger{% endif %}">{{ e.get_payment_status_display }}</span></td>
+              <td>{{ e.enrolled_at|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:28px;">Hali yozilishlar yo'q</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;">
+      <div style="padding:18px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:1rem; font-weight:700;">👥 So'nggi Foydalanuvchilar</h3>
+        <a href="{% url 'manage_users' %}" class="btn btn-secondary btn-sm">Barchasi →</a>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Username</th><th>Email</th><th>Rol</th><th>Sana</th></tr></thead>
+          <tbody>
+            {% for u in recent_users %}
+            <tr>
+              <td>{{ u.username }}</td>
+              <td>{{ u.email }}</td>
+              <td><span class="badge {% if u.role == 'owner' %}badge-danger{% elif u.role == 'admin' %}badge-warning{% elif u.role == 'student' %}badge-success{% else %}badge-secondary{% endif %}">{{ u.role }}</span></td>
+              <td>{{ u.date_joined|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center; padding:28px; color:var(--text-muted);">Foydalanuvchilar yo'q</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

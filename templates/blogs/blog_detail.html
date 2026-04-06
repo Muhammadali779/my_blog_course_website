@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}{{ blog.title }} - {{ site.owner_name }}{% endblock %}
+{% block content %}
+<div class="blog-detail-wrap fade-in">
+  <div class="breadcrumb" style="margin-bottom:24px;">
+    <a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span>
+    <a href="{% url 'blog_list' %}">Bloglar</a><span class="breadcrumb-sep">/</span>
+    <span>{{ blog.title|truncatechars:40 }}</span>
+  </div>
+
+  <header class="blog-detail-header">
+    {% if blog.tags.all %}
+    <div class="blog-card-tags" style="margin-bottom:16px;">
+      {% for tag in blog.tags.all %}<span class="tag">{{ tag.name }}</span>{% endfor %}
+    </div>
+    {% endif %}
+    <h1 class="blog-detail-title">{{ blog.title }}</h1>
+    <div class="blog-detail-meta">
+      <span>👤 {{ blog.author.get_full_name|default:blog.author.username }}</span>
+      <span>📅 {{ blog.created_at|date:"d F Y" }}</span>
+      <span>⏱ {{ blog.reading_time }} min o'qish</span>
+      <span>👁 {{ blog.views_count }} ko'rishlar</span>
+    </div>
+  </header>
+
+  {% if blog.thumbnail %}
+  <img src="{{ blog.thumbnail.url }}" alt="{{ blog.title }}" class="blog-detail-thumb">
+  {% endif %}
+
+  {% if request.user.is_authenticated and request.user.role in 'admin,owner' %}
+  <div style="display:flex; gap:10px; margin-bottom:28px;">
+    <a href="{% url 'blog_edit' blog.slug %}" class="btn btn-secondary btn-sm">✏️ Tahrirlash</a>
+    <a href="{% url 'blog_delete' blog.slug %}" class="btn btn-danger btn-sm">🗑 O'chirish</a>
+  </div>
+  {% endif %}
+
+  <div class="blog-detail-content">
+    {{ blog.content|linebreaks }}
+  </div>
+
+  <!-- Related -->
+  {% if related %}
+  <div style="margin-top:56px; padding-top:40px; border-top:1px solid var(--border);">
+    <h3 style="font-size:1.2rem; margin-bottom:24px;">📚 Boshqa maqolalar</h3>
+    <div class="blog-grid">
+      {% for b in related %}
+      <article class="blog-card">
+        <div class="blog-card-img">
+          {% if b.thumbnail %}<img src="{{ b.thumbnail.url }}" alt="{{ b.title }}" loading="lazy">
+          {% else %}<div class="blog-card-img-placeholder">📝</div>{% endif %}
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-meta"><span>⏱ {{ b.reading_time }} min</span><span>👁 {{ b.views_count }}</span></div>
+          <h3 class="blog-card-title">{{ b.title }}</h3>
+          <a href="{% url 'blog_detail' b.slug %}" class="btn btn-outline btn-sm">O'qish →</a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Men Haqimda - {{ site.owner_name }}{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">
+      <a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span><span>Men Haqimda</span>
+    </div>
+    <h1 style="font-size:2rem; letter-spacing:-0.5px; margin-top:12px;">👤 Men Haqimda</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="about-grid">
+      <!-- Sidebar -->
+      <div class="about-avatar-wrap">
+        {% if site.owner_avatar %}
+          <img src="{{ site.owner_avatar.url }}" alt="{{ site.owner_name }}" class="about-avatar">
+        {% else %}
+          <div class="about-avatar-placeholder">👨‍💻</div>
+        {% endif %}
+        <div style="text-align:center; margin-top:20px;">
+          <h2 style="font-size:1.3rem; font-weight:800;">{{ site.owner_name }}</h2>
+          <p style="color:var(--text-secondary); font-size:0.9rem; margin-top:4px;">{{ site.owner_title }}</p>
+        </div>
+        <!-- Social Links -->
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:24px;">
+          {% if site.telegram_url %}
+          <a href="{{ site.telegram_url }}" target="_blank" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+            ✈️ Telegram{% if site.telegram_username %} · @{{ site.telegram_username }}{% endif %}
+          </a>
+          {% endif %}
+          {% if site.github_url %}
+          <a href="{{ site.github_url }}" target="_blank" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+            🐙 GitHub{% if site.github_username %} · @{{ site.github_username }}{% endif %}
+          </a>
+          {% endif %}
+          {% if site.youtube_url %}
+          <a href="{{ site.youtube_url }}" target="_blank" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+            ▶️ YouTube{% if site.youtube_username %} · {{ site.youtube_username }}{% endif %}
+          </a>
+          {% endif %}
+          {% if site.instagram_url %}
+          <a href="{{ site.instagram_url }}" target="_blank" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+            📸 Instagram{% if site.instagram_username %} · @{{ site.instagram_username }}{% endif %}
+          </a>
+          {% endif %}
+          {% if site.linkedin_url %}
+          <a href="{{ site.linkedin_url }}" target="_blank" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+            💼 LinkedIn{% if site.linkedin_username %} · {{ site.linkedin_username }}{% endif %}
+          </a>
+          {% endif %}
+          {% if site.email %}
+          <a href="mailto:{{ site.email }}" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+            📧 {{ site.email }}
+          </a>
+          {% endif %}
+          {% if site.phone %}
+          <a href="tel:{{ site.phone }}" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+            📞 {{ site.phone }}
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="fade-in">
+        {% if site.owner_bio %}
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:28px; margin-bottom:28px;">
+          <h3 style="font-size:1.1rem; margin-bottom:14px;">👋 Salom!</h3>
+          <p style="color:var(--text-secondary); line-height:1.8;">{{ site.owner_bio }}</p>
+        </div>
+        {% endif %}
+
+        {% if site.university %}
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:28px; margin-bottom:28px;">
+          <h3 style="font-size:1.1rem; margin-bottom:16px;">🎓 Ta'lim</h3>
+          <div style="display:flex; gap:16px; align-items:flex-start;">
+            <div style="width:44px;height:44px;border-radius:var(--radius-sm);background:var(--accent-glow);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🏛️</div>
+            <div>
+              <div style="font-weight:700; margin-bottom:4px;">{{ site.university }}</div>
+              {% if site.major %}<div style="color:var(--text-secondary); font-size:0.9rem;">{{ site.major }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if site.get_skills_list %}
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:28px; margin-bottom:28px;">
+          <h3 style="font-size:1.1rem; margin-bottom:16px;">💻 Ko'nikmalar</h3>
+          <div class="skill-pills">
+            {% for skill in site.get_skills_list %}
+            <span class="skill-pill">{{ skill }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- CTA -->
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="{% url 'contact' %}" class="btn btn-primary">📧 Bog'lanish</a>
+          <a href="{% url 'course_list' %}" class="btn btn-secondary">🎓 Kurslarim</a>
+          <a href="{% url 'blog_list' %}" class="btn btn-secondary">📝 Bloglarim</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

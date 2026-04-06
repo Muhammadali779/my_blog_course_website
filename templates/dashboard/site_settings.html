@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Sayt Sozlamalari{% endblock %}
+{% block content %}
+<div class="dash-layout">
+  {% include 'dashboard/sidebar.html' %}
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1 class="dash-title">⚙️ Sayt Sozlamalari</h1>
+      <p class="dash-subtitle">Kontakt ma'lumotlari va ijtimoiy tarmoqlar</p>
+    </div>
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:32px; max-width:760px;">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h3 style="font-size:1rem; font-weight:700; margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid var(--border);">👤 Shaxsiy Ma'lumotlar</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group"><label class="form-label">Ism</label>{{ form.owner_name }}</div>
+          <div class="form-group"><label class="form-label">Unvon/Lavozim</label>{{ form.owner_title }}</div>
+        </div>
+        <div class="form-group"><label class="form-label">Bio</label>{{ form.owner_bio }}</div>
+        <div class="form-group">
+          <label class="form-label">Avatar</label>
+          {% if form.instance.owner_avatar %}<img src="{{ form.instance.owner_avatar.url }}" style="height:60px;border-radius:50%;margin-bottom:8px;display:block;">{% endif %}
+          {{ form.owner_avatar }}
+        </div>
+
+        <h3 style="font-size:1rem; font-weight:700; margin:24px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border);">📞 Aloqa</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group"><label class="form-label">Telefon</label>{{ form.phone }}</div>
+          <div class="form-group"><label class="form-label">Email</label>{{ form.email }}</div>
+        </div>
+        <div class="form-group"><label class="form-label">Manzil</label>{{ form.address }}</div>
+
+        <h3 style="font-size:1rem; font-weight:700; margin:24px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border);">🌐 Ijtimoiy Tarmoqlar</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group"><label class="form-label">✈️ Telegram URL</label>{{ form.telegram_url }}</div>
+          <div class="form-group"><label class="form-label">✈️ Telegram Username</label>{{ form.telegram_username }}</div>
+          <div class="form-group"><label class="form-label">🐙 GitHub URL</label>{{ form.github_url }}</div>
+          <div class="form-group"><label class="form-label">🐙 GitHub Username</label>{{ form.github_username }}</div>
+          <div class="form-group"><label class="form-label">▶️ YouTube URL</label>{{ form.youtube_url }}</div>
+          <div class="form-group"><label class="form-label">▶️ YouTube Username</label>{{ form.youtube_username }}</div>
+          <div class="form-group"><label class="form-label">📸 Instagram URL</label>{{ form.instagram_url }}</div>
+          <div class="form-group"><label class="form-label">📸 Instagram Username</label>{{ form.instagram_username }}</div>
+          <div class="form-group"><label class="form-label">💼 LinkedIn URL</label>{{ form.linkedin_url }}</div>
+          <div class="form-group"><label class="form-label">💼 LinkedIn Username</label>{{ form.linkedin_username }}</div>
+        </div>
+
+        <h3 style="font-size:1rem; font-weight:700; margin:24px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border);">🎓 Ta'lim</h3>
+        <div class="form-group"><label class="form-label">Universitet</label>{{ form.university }}</div>
+        <div class="form-group"><label class="form-label">Yo'nalish</label>{{ form.major }}</div>
+        <div class="form-group"><label class="form-label">Ko'nikmalar (vergul bilan)</label>{{ form.skills }}</div>
+
+        <button type="submit" class="btn btn-primary btn-lg">💾 Saqlash</button>
+      </form>
+    </div>
+  </main>
+</div>
+{% endblock %}

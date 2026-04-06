@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Foydalanuvchilar - Dashboard{% endblock %}
+{% block content %}
+<div class="dash-layout">
+  {% include 'dashboard/sidebar.html' %}
+  <main class="dash-main">
+    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+      <div>
+        <h1 class="dash-title">👥 Foydalanuvchilar</h1>
+        <p class="dash-subtitle">Jami: {{ users.count }} ta foydalanuvchi</p>
+      </div>
+      {% if request.user.is_owner %}
+      <a href="{% url 'create_user' %}" class="btn btn-primary">+ Yangi Foydalanuvchi</a>
+      {% endif %}
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th><th>Email</th><th>Rol</th><th>Holat</th><th>Sana</th>
+            {% if request.user.is_owner %}<th>Amallar</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>
+              <strong>{{ user.username }}</strong>
+              {% if user == request.user %}<span class="badge badge-secondary" style="margin-left:6px;">Siz</span>{% endif %}
+            </td>
+            <td>{{ user.email }}</td>
+            <td>
+              {% if request.user.is_owner and user != request.user %}
+              <form method="post" action="{% url 'change_user_role' user.id %}" style="display:inline;">
+                {% csrf_token %}
+                <select name="role" onchange="this.form.submit()" class="form-select" style="padding:4px 8px; font-size:0.8rem; width:auto;">
+                  <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                  <option value="student" {% if user.role == 'student' %}selected{% endif %}>Student</option>
+                  <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+              </form>
+              {% else %}
+              <span class="badge {% if user.role == 'owner' %}badge-danger{% elif user.role == 'admin' %}badge-warning{% elif user.role == 'student' %}badge-success{% else %}badge-secondary{% endif %}">
+                {{ user.role }}
+              </span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge {% if user.is_active %}badge-success{% else %}badge-danger{% endif %}">
+                {% if user.is_active %}Faol{% else %}Bloklangan{% endif %}
+              </span>
+            </td>
+            <td>{{ user.date_joined|date:"d M Y" }}</td>
+            {% if request.user.is_owner %}
+            <td>
+              {% if user != request.user %}
+              <form method="post" action="{% url 'toggle_user_active' user.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn {% if user.is_active %}btn-danger{% else %}btn-primary{% endif %} btn-sm">
+                  {% if user.is_active %}Blokla{% else %}Faollashtir{% endif %}
+                </button>
+              </form>
+              {% endif %}
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center; padding:32px; color:var(--text-muted);">Foydalanuvchilar yo'q</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+{% endblock %}

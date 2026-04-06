@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Kurslar - {{ site.owner_name }}{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">
+      <a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span><span>Kurslar</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;">
+      <div>
+        <span class="section-label">Online Ta'lim</span>
+        <h1 style="font-size:2rem; letter-spacing:-0.5px; margin-top:6px;">Kurslar</h1>
+        <p style="color:var(--text-secondary); margin-top:8px;">Strukturali o'quv dasturlari orqali professional bo'ling</p>
+      </div>
+      {% if request.user.is_authenticated and request.user.role in 'admin,owner' %}
+      <a href="{% url 'course_create' %}" class="btn btn-primary">+ Yangi Kurs</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    {% if categories %}
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:32px;">
+      <a href="{% url 'course_list' %}" class="tag {% if not selected_cat %}active{% endif %}"
+         style="{% if not selected_cat %}background:var(--accent-1);color:#fff;{% endif %}">Barchasi</a>
+      {% for cat in categories %}
+      <a href="?cat={{ cat.slug }}" class="tag {% if selected_cat == cat %}active{% endif %}"
+         style="{% if selected_cat == cat %}background:var(--accent-1);color:#fff;{% endif %}">{{ cat.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if courses %}
+    <div class="course-grid stagger">
+      {% for course in courses %}
+      <article class="course-card">
+        <div class="course-card-thumb">
+          {% if course.thumbnail %}
+            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" loading="lazy">
+          {% else %}
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,var(--accent-1)22,var(--accent-3)22);display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.5;">🎓</div>
+          {% endif %}
+          <span class="course-card-badge {% if course.is_free %}badge-free{% else %}badge-paid{% endif %}">
+            {% if course.is_free %}Bepul{% else %}{{ course.price|floatformat:0 }} so'm{% endif %}
+          </span>
+        </div>
+        <div class="course-card-body">
+          <div class="course-card-level">{{ course.get_level_display }}</div>
+          <h3 class="course-card-title">{{ course.title }}</h3>
+          <p class="course-card-desc">{{ course.description|truncatechars:100 }}</p>
+          <div class="course-card-stats">
+            <span class="course-card-stat">📚 {{ course.lessons_count }} dars</span>
+            <span class="course-card-stat">🗓 {{ course.duration_months }} oy</span>
+          </div>
+          <div class="course-card-footer">
+            <span class="course-price {% if course.is_free %}course-price-free{% endif %}">
+              {% if course.is_free %}Bepul{% else %}{{ course.price|floatformat:0 }} so'm{% endif %}
+            </span>
+            <div style="display:flex;gap:8px;">
+              <a href="{% url 'course_detail' course.slug %}" class="btn btn-primary btn-sm">Ko'rish →</a>
+              {% if request.user.is_authenticated and request.user.role in 'admin,owner' %}
+              <a href="{% url 'course_edit' course.slug %}" class="btn btn-secondary btn-sm">✏️</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {% if courses.has_other_pages %}
+    <nav class="pagination">
+      {% if courses.has_previous %}<a href="?page={{ courses.previous_page_number }}" class="page-link">←</a>{% endif %}
+      {% for num in courses.paginator.page_range %}
+        {% if courses.number == num %}<span class="page-link active">{{ num }}</span>
+        {% elif num|add:"-2" <= courses.number and num <= courses.number|add:"2" %}
+          <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if courses.has_next %}<a href="?page={{ courses.next_page_number }}" class="page-link">→</a>{% endif %}
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🎓</div>
+      <div class="empty-title">Hali kurs yo'q</div>
+      <div class="empty-desc">Tez orada kurslar qo'shiladi!</div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,28 @@
+<aside class="dash-sidebar">
+  <div class="dash-sidebar-title">Boshqaruv Paneli</div>
+  <ul class="dash-sidebar-links">
+    <li><a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">📊 Dashboard</a></li>
+  </ul>
+
+  <div class="dash-sidebar-title" style="margin-top:16px;">Kontent</div>
+  <ul class="dash-sidebar-links">
+    <li><a href="{% url 'blog_list' %}">📝 Bloglar</a></li>
+    <li><a href="{% url 'blog_create' %}">➕ Yangi Blog</a></li>
+    <li><a href="{% url 'manage_courses' %}" class="{% if request.resolver_match.url_name == 'manage_courses' %}active{% endif %}">🎓 Kurslar</a></li>
+    <li><a href="{% url 'course_create' %}">➕ Yangi Kurs</a></li>
+  </ul>
+
+  <div class="dash-sidebar-title" style="margin-top:16px;">Foydalanuvchilar</div>
+  <ul class="dash-sidebar-links">
+    <li><a href="{% url 'manage_users' %}" class="{% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}">👥 Foydalanuvchilar</a></li>
+    <li><a href="{% url 'manage_enrollments' %}" class="{% if request.resolver_match.url_name == 'manage_enrollments' %}active{% endif %}">🎓 Yozilishlar</a></li>
+  </ul>
+
+  <div class="dash-sidebar-title" style="margin-top:16px;">Boshqa</div>
+  <ul class="dash-sidebar-links">
+    <li><a href="{% url 'contact_list' %}" class="{% if request.resolver_match.url_name == 'contact_list' %}active{% endif %}">📧 Xabarlar</a></li>
+    {% if request.user.is_owner %}
+    <li><a href="{% url 'site_settings' %}" class="{% if request.resolver_match.url_name == 'site_settings' %}active{% endif %}">⚙️ Sozlamalar</a></li>
+    {% endif %}
+  </ul>
+</aside>

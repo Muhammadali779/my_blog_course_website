@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }} - {{ site.owner_name }}{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">
+      <a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="{% url 'course_list' %}">Kurslar</a><span class="breadcrumb-sep">/</span>
+      <span>{{ course.title|truncatechars:40 }}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:40px;align-items:start;margin-top:16px;" class="course-detail-grid">
+      <div>
+        <span class="badge badge-secondary" style="margin-bottom:12px;">{{ course.get_level_display }}</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.4rem);letter-spacing:-0.5px;margin-bottom:14px;">{{ course.title }}</h1>
+        <p style="color:var(--text-secondary);line-height:1.7;max-width:600px;">{{ course.description }}</p>
+        <div style="display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;">
+          <span style="color:var(--text-muted);font-size:0.88rem;">📚 {{ course.lessons_count }} dars</span>
+          <span style="color:var(--text-muted);font-size:0.88rem;">🗓 {{ course.duration_months }} oy</span>
+          <span style="color:var(--text-muted);font-size:0.88rem;">📊 {{ course.get_level_display }}</span>
+          {% if course.category %}<span style="color:var(--text-muted);font-size:0.88rem;">📂 {{ course.category.name }}</span>{% endif %}
+        </div>
+      </div>
+      <div style="min-width:260px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:24px; text-align:center;">
+        {% if course.thumbnail %}
+        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" style="width:100%;border-radius:var(--radius-sm);margin-bottom:16px;">
+        {% endif %}
+        <div style="font-size:1.8rem; font-weight:800; color:{% if course.is_free %}#10b981{% else %}var(--accent-1){% endif %}; margin-bottom:16px;">
+          {% if course.is_free %}Bepul{% else %}{{ course.price|floatformat:0 }} so'm{% endif %}
+        </div>
+        {% if is_enrolled %}
+          <div class="badge badge-success" style="font-size:0.9rem; padding:8px 16px; margin-bottom:12px; display:block;">
+            ✅ Yozilgansiz
+          </div>
+          {% if enrollment.payment_status == 'pending' and not course.is_free %}
+          <div class="badge badge-warning" style="display:block;margin-bottom:12px;padding:8px 16px;font-size:0.82rem;">
+            ⏳ To'lov kutilmoqda
+          </div>
+          {% endif %}
+        {% else %}
+          <a href="{% url 'enroll_course' course.slug %}" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+            {% if course.is_free %}Bepul yoziling{% else %}Kursga yozilish{% endif %}
+          </a>
+        {% endif %}
+        {% if request.user.is_authenticated and request.user.role in 'admin,owner' %}
+        <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px;">
+          <a href="{% url 'course_edit' course.slug %}" class="btn btn-secondary btn-sm">✏️ Tahrirlash</a>
+          <a href="{% url 'course_modules' course.slug %}" class="btn btn-secondary btn-sm">📚 Modullar</a>
+          <a href="{% url 'manage_students' course.slug %}" class="btn btn-secondary btn-sm">👥 O'quvchilar</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section-sm">
+  <div class="container">
+    <h2 style="font-size:1.4rem; margin-bottom:24px;">📚 Kurs Dasturi</h2>
+    {% if modules %}
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      {% for module in modules %}
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;">
+        <div style="padding:16px 20px; background:var(--bg-base); display:flex; justify-content:space-between; align-items:center; cursor:pointer;"
+             onclick="this.nextElementSibling.classList.toggle('hidden')">
+          <span style="font-weight:700; font-size:0.95rem;">{{ forloop.counter }}. {{ module.title }}</span>
+          <span style="color:var(--text-muted); font-size:0.82rem;">{{ module.lessons.count }} dars</span>
+        </div>
+        <div class="lessons-list {% if not is_enrolled and forloop.counter > 1 %}{% endif %}" style="padding:8px 0;">
+          {% for lesson in module.lessons.all %}
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 20px; border-top:1px solid var(--border);">
+            <span style="color:var(--text-muted); font-size:0.8rem; min-width:24px;">{{ forloop.counter }}</span>
+            <span style="flex:1; font-size:0.88rem;">{{ lesson.title }}</span>
+            {% if lesson.duration_minutes %}<span style="color:var(--text-muted); font-size:0.78rem;">{{ lesson.duration_minutes }} min</span>{% endif %}
+            {% if lesson.is_preview %}
+              <a href="{% url 'lesson_detail' course.slug lesson.id %}" class="btn btn-outline btn-sm" style="font-size:0.75rem;">👁 Preview</a>
+            {% elif is_enrolled %}
+              <a href="{% url 'lesson_detail' course.slug lesson.id %}" class="btn btn-primary btn-sm" style="font-size:0.75rem;">▶️</a>
+            {% else %}
+              <span style="color:var(--text-muted); font-size:0.8rem;">🔒</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding:40px;">
+      <div class="empty-icon">📚</div>
+      <div class="empty-title">Modullar hali qo'shilmagan</div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
